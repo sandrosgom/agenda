@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento via WhatsApp</title>
+    <style>
+        :root {
+            --primary: #25D366; /* Verde oficial do WhatsApp */
+            --primary-dark: #128C7E;
+            --background: #f4f7f6;
+            --surface: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--background); color: var(--text); display: flex; justify-content: center; padding: 15px; }
+        .app-container { background: var(--surface); width: 100%; max-width: 450px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 20px; }
+        .header { text-align: center; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .avatar { width: 70px; height: 70px; background: #eaeaea; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .header h1 { font-size: 1.3rem; margin-bottom: 4px; }
+        .header p { font-size: 0.9rem; color: var(--text-light); }
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+        
+        /* GRIDS DE SELEÇÃO */
+        .date-grid, .time-grid, .type-grid { display: grid; gap: 8px; margin-bottom: 25px; }
+        .date-grid { grid-template-columns: repeat(4, 1fr); }
+        .time-grid { grid-template-columns: repeat(3, 1fr); }
+        .type-grid { grid-template-columns: repeat(2, 1fr); }
+
+        .date-card, .time-card, .type-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+        .date-card span { display: block; }
+        .date-card .weekday { font-size: 0.75rem; text-transform: uppercase; color: var(--text-light); }
+        .date-card .day { font-size: 1.1rem; font-weight: bold; }
+        
+        /* ESTADOS ATIVOS */
+        .date-card.active, .time-card.active, .type-card.active { background-color: var(--primary); border-color: var(--primary); color: white; }
+        .date-card.active .weekday { color: rgba(255,255,255,0.8); }
+        
+        /* FORMULÁRIO */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-light); }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; outline: none; }
+        .input-group input:focus { border-color: var(--primary-dark); }
+        
+        .btn-submit { width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 15px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-submit:hover { background-color: var(--primary-dark); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="avatar">👨‍🔧</div>
+            <h1>João Silva - Eletricista</h1>
+            <p>Escolha as opções abaixo para agendar pelo WhatsApp</p>
+        </div>
+
+        <form id="formAgendamento">
+            <!-- 1. Datas Fixas (Evita bloqueio do navegador) -->
+            <div class="section-title">1. Escolha o dia</div>
+            <div class="date-grid" id="dateGrid">
+                <div class="date-card active" data-date="Hoje (Terça-feira)">
+                    <span class="weekday">Hoje</span>
+                    <span class="day">06</span>
+                </div>
+                <div class="date-card" data-date="Quarta-feira (07/10)">
+                    <span class="weekday">Qua</span>
+                    <span class="day">07</span>
+                </div>
+                <div class="date-card" data-date="Quinta-feira (08/10)">
+                    <span class="weekday">Qui</span>
+                    <span class="day">08</span>
+                </div>
+                <div class="date-card" data-date="Sexta-feira (09/10)">
+                    <span class="weekday">Sex</span>
+                    <span class="day">09</span>
+                </div>
+            </div>
+
+            <!-- 2. Horários Comerciais -->
+            <div class="section-title">2. Escolha o horário</div>
+            <div class="time-grid" id="timeGrid">
+                <div class="time-card active" data-time="08:00">08:00</div>
+                <div class="time-card" data-time="09:00">09:00</div>
+                <div class="time-card" data-time="10:00">10:00</div>
+                <div class="time-card" data-time="11:00">11:00</div>
+                <div class="time-card" data-time="13:30">13:30</div>
+                <div class="time-card" data-time="14:30">14:30</div>
+                <div class="time-card" data-time="15:30">15:30</div>
+                <div class="time-card" data-time="16:30">16:30</div>
+                <div class="time-card" data-time="17:30">17:30</div>
+            </div>
+
+            <!-- 3. Formato do Atendimento -->
+            <div class="section-title">3. Formato do atendimento</div>
+            <div class="type-grid" id="typeGrid">
+                <div class="type-card active" data-type="📍 Presencial (No meu endereço)">📍 Presencial</div>
+                <div class="type-card" data-type="💻 Online (Chamada de Vídeo)">💻 Online</div>
+            </div>
+
+            <!-- 4. Dados Cadastrais -->
+            <div class="section-title">4. Seus Dados</div>
+            <div class="input-group">
+                <label for="name">Seu Nome</label>
+                <input type="text" id="name" placeholder="Ex: Carlos Souza" required>
+            </div>
+            <div class="input-group">
+                <label for="service">Serviço Pretendido</label>
+                <input type="text" id="service" placeholder="Ex: Troca de disjuntor" required>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Enviar Pedido para o WhatsApp
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO DO SEU NÚMERO (Coloque o número que receberá as mensagens aqui)
+        let TELEFONE_WHATSAPP = "DIGITE_AQUI"; 
+
+        // Valores padrões iniciais (vêm marcados com 'active' no HTML)
+        let dataSelecionada = "Hoje (Terça-feira)";
+        let horarioSelecionado = "08:00";
+        let formatoSelecionado = "📍 Presencial (No meu endereço)";
+
+        // SELEÇÃO DOS CARDS DE DATA
+        const dateCards = document.querySelectorAll('#dateGrid .date-card');
+        dateCards.forEach(card => {
+            card.addEventListener('click', () => {
+                dateCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                dataSelecionada = card.getAttribute('data-date');
+            });
+        });
+
+        // SELEÇÃO DOS CARDS DE HORÁRIO
+        const timeCards = document.querySelectorAll('#timeGrid .time-card');
+        timeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                timeCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                horarioSelecionado = card.getAttribute('data-time');
+            });
+        });
+
+        // SELEÇÃO DO TIPO DE ATENDIMENTO
+        const typeCards = document.querySelectorAll('#typeGrid .type-card');
+        typeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                typeCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                formatoSelecionado = card.getAttribute('data-type');
+            });
+        });
+
+        // DISPARO PARA O WHATSAPP
+        document.getElementById('formAgendamento').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Se você esqueceu de mudar a variável TELEFONE_WHATSAPP, o app pede o número no navegador
+            if (TELEFONE_WHATSAPP === "DIGITE_AQUI") {
+                const telUsuario = prompt("Digite o número de telefone que vai receber as mensagens\n(Ex: 55 + DDD + Número):", "55");
+                if (!telUsuario || telUsuario === "55") {
+                    alert("É necessário inserir o telefone para continuar o teste!");
+                    return;
+                }
+                TELEFONE_WHATSAPP = telUsuario;
+            }
+
+            const numeroLimpo = TELEFONE_WHATSAPP.replace(/\D/g, "");
+            const nomeCliente = document.getElementById('name').value;
+            const servicoCliente = document.getElementById('service').value;
+
+            const textoMensagem = `Olá! Gostaria de confirmar um agendamento:\n\n` +
+                                  `👤 *Nome:* ${nomeCliente}\n` +
+                                  `🛠️ *Serviço:* ${servicoCliente}\n` +
+                                  `📅 *Data:* ${dataSelecionada}\n` +
+                                  `⏰ *Horário:* ${horarioSelecionado}\n` +
+                                  `💼 *Formato:* ${formatoSelecionado}\n\n` +
+                                  `Fico no aguardo do seu retorno!`;
+
+            const linkWhatsApp = `https://wa.me{numeroLimpo}?text=${encodeURIComponent(textoMensagem)}`;
+            
+            window.location.href = linkWhatsApp;
+        });
+    </script>
+</body>
+</html>
