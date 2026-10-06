@@ -152,7 +152,7 @@
             });
         });
 
-        // DIRECONAMENTO UNIVERSAL E MATADOR (wa.me)
+        // ENVIAR PEDIDO COM PROTOCOLO DE CONEXÃO ATUALIZADO
         document.getElementById('formAgendamento').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -164,21 +164,20 @@
                                 "🛠️ *Serviço:* " + serviceCliente + "\n" +
                                 "📅 *Data:* " + dataSelecionada + "\n" +
                                 "⏰ *Horário:* " + horarioSelecionado + "\n" +
-                                "💼 *Formato:* " + formatoSelecionado + "\n\n" +
-                                "Fico no aguardo do seu retorno!";
+                                "💼 *Formato:* " + formatoSelecionado;
 
-            var esCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            var linkFinal = "";
+            var textoCodificado = encodeURIComponent(textoMensagem);
 
-            if (esCelular) {
-                // ROTA UNIVERSAL MOBILE: O próprio sistema operacional do smartphone reconhece e abre o app ativo
-                linkFinal = "https://wa.me" + TELEFONE_WHATSAPP + "?text=" + encodeURIComponent(textoMensagem);
-            } else {
-                // ROTA PARA COMPUTADORES (WhatsApp Web)
-                linkFinal = "https://whatsapp.com" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
+            // Cria o link que tenta forçar a abertura direta no aplicativo do celular
+            var linkAppNativo = "whatsapp://send?phone=" + TELEFONE_WHATSAPP + "&text=" + textoCodificado;
+            var linkWebAlternativo = "https://wa.me" + TELEFONE_WHATSAPP + "?text=" + textoCodificado;
+
+            // Executa a tentativa nativa. Se falhar no WebView do aplicativo, usa a URL alternativa.
+            try {
+                window.location.href = linkAppNativo;
+            } catch (e) {
+                window.open(linkWebAlternativo, '_blank');
             }
-            
-            window.location.href = linkFinal;
         });
     </script>
 </body>
