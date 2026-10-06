@@ -58,7 +58,7 @@
         </div>
 
         <form id="formAgendamento">
-            <!-- 1. Datas Fixas (Evita bloqueio do navegador) -->
+            <!-- 1. Datas Fixas -->
             <div class="section-title">1. Escolha o dia</div>
             <div class="date-grid" id="dateGrid">
                 <div class="date-card active" data-date="Hoje (Terça-feira)">
@@ -118,75 +118,62 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO SEU NÚMERO (Coloque o número que receberá as mensagens aqui)
-        let TELEFONE_WHATSAPP = "DIGITE_AQUI"; 
+        // SEU NÚMERO FIXADO CORRETAMENTE E SEM ERROS DE CÓDIGO
+        var TELEFONE_WHATSAPP = "5541984096589"; 
 
-        // Valores padrões iniciais (vêm marcados com 'active' no HTML)
-        let dataSelecionada = "Hoje (Terça-feira)";
-        let horarioSelecionado = "08:00";
-        let formatoSelecionado = "📍 Presencial (No meu endereço)";
+        var dataSelecionada = "Hoje (Terça-feira)";
+        var horarioSelecionado = "08:00";
+        var formatoSelecionado = "📍 Presencial (No meu endereço)";
 
         // SELEÇÃO DOS CARDS DE DATA
-        const dateCards = document.querySelectorAll('#dateGrid .date-card');
-        dateCards.forEach(card => {
-            card.addEventListener('click', () => {
-                dateCards.forEach(c => c.classList.remove('active'));
+        var dateCards = document.querySelectorAll('#dateGrid .date-card');
+        dateCards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                dateCards.forEach(function(c) { c.classList.remove('active'); });
                 card.classList.add('active');
                 dataSelecionada = card.getAttribute('data-date');
             });
         });
 
         // SELEÇÃO DOS CARDS DE HORÁRIO
-        const timeCards = document.querySelectorAll('#timeGrid .time-card');
-        timeCards.forEach(card => {
-            card.addEventListener('click', () => {
-                timeCards.forEach(c => c.classList.remove('active'));
+        var timeCards = document.querySelectorAll('#timeGrid .time-card');
+        timeCards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                timeCards.forEach(function(c) { c.classList.remove('active'); });
                 card.classList.add('active');
                 horarioSelecionado = card.getAttribute('data-time');
             });
         });
 
         // SELEÇÃO DO TIPO DE ATENDIMENTO
-        const typeCards = document.querySelectorAll('#typeGrid .type-card');
-        typeCards.forEach(card => {
-            card.addEventListener('click', () => {
-                typeCards.forEach(c => c.classList.remove('active'));
+        var typeCards = document.querySelectorAll('#typeGrid .type-card');
+        typeCards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                typeCards.forEach(function(c) { c.classList.remove('active'); });
                 card.classList.add('active');
                 formatoSelecionado = card.getAttribute('data-type');
             });
         });
 
-        // DISPARO PARA O WHATSAPP
+        // DISPARO SEGURO E DIRETO PARA O WHATSAPP
         document.getElementById('formAgendamento').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            // Se você esqueceu de mudar a variável TELEFONE_WHATSAPP, o app pede o número no navegador
-            if (TELEFONE_WHATSAPP === "DIGITE_AQUI") {
-                const telUsuario = prompt("Digite o número de telefone que vai receber as mensagens\n(Ex: 55 + DDD + Número):", "55");
-                if (!telUsuario || telUsuario === "55") {
-                    alert("É necessário inserir o telefone para continuar o teste!");
-                    return;
-                }
-                TELEFONE_WHATSAPP = telUsuario;
-            }
+            var nomeCliente = document.getElementById('name').value;
+            var servicoCliente = document.getElementById('service').value;
 
-            const numeroLimpo = TELEFONE_WHATSAPP.replace(/\D/g, "");
-            const nomeCliente = document.getElementById('name').value;
-            const servicoCliente = document.getElementById('service').value;
+            var textoMensagem = "Olá! Gostaria de confirmar um agendamento:\n\n" +
+                                "👤 *Nome:* " + nomeCliente + "\n" +
+                                "🛠️ *Serviço:* " + servicoCliente + "\n" +
+                                "📅 *Data:* " + dataSelecionada + "\n" +
+                                "⏰ *Horário:* " + horarioSelecionado + "\n" +
+                                "💼 *Formato:* " + formatoSelecionado + "\n\n" +
+                                "Fico no aguardo do seu retorno!";
 
-            const textoMensagem = `Olá! Gostaria de confirmar um agendamento:\n\n` +
-                                  `👤 *Nome:* ${nomeCliente}\n` +
-                                  `🛠️ *Serviço:* ${servicoCliente}\n` +
-                                  `📅 *Data:* ${dataSelecionada}\n` +
-                                  `⏰ *Horário:* ${horarioSelecionado}\n` +
-                                  `💼 *Formato:* ${formatoSelecionado}\n\n` +
-                                  `Fico no aguardo do seu retorno!`;
-
-            var linkWhatsApp = "https://whatsapp.com" + numeroLimpo + "&text=" + encodeURIComponent(textoMensagem);
-
-
+            var linkFinal = "https://whatsapp.com" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
             
-            window.location.href = linkWhatsApp;
+            // Força o navegador a ir para o app do WhatsApp sem abrir nova aba
+            window.location.href = linkFinal;
         });
     </script>
 </body>
