@@ -44,8 +44,7 @@
         .input-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; outline: none; }
         .input-group input:focus { border-color: var(--primary-dark); }
         
-        /* BOTÃO INTERATIVO */
-        .btn-submit { display: flex; width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 15px; font-size: 1rem; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; text-decoration: none; transition: background 0.2s; text-align: center; }
+        .btn-submit { width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 15px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-submit:hover { background-color: var(--primary-dark); }
     </style>
 </head>
@@ -58,8 +57,14 @@
             <p>Escolha as opções abaixo para agendar pelo WhatsApp</p>
         </div>
 
-        <form id="formAgendamento" onsubmit="event.preventDefault();">
-            <!-- 1. Escolha o Dia -->
+        <!-- MUDANÇA BLINDADA: O formulário envia direto para o link da API oficial com a barra correta -->
+        <form id="formAgendamento" method="GET" action="https://whatsapp.com">
+            
+            <!-- Parâmetros que a API do WhatsApp exige de forma nativa -->
+            <input type="hidden" name="phone" value="5541984097193">
+            <input type="hidden" name="text" id="textInput" value="">
+
+            <!-- 1. Datas Fixas -->
             <div class="section-title">1. Escolha o dia</div>
             <div class="date-grid" id="dateGrid">
                 <div class="date-card active" data-date="Hoje (Terça-feira)">
@@ -80,7 +85,7 @@
                 </div>
             </div>
 
-            <!-- 2. Escolha o Horário -->
+            <!-- 2. Horários Comerciais -->
             <div class="section-title">2. Escolha o horário</div>
             <div class="time-grid" id="timeGrid">
                 <div class="time-card active" data-time="08:00">08:00</div>
@@ -109,32 +114,27 @@
             </div>
             <div class="input-group">
                 <label for="service">Serviço Pretendido</label>
-                <input type="text" id="service" placeholder="Ex: Troca de disjuntor" required>
+                <input type="text" id="service" placeholder="Ex: Conserto de Televisão" required>
             </div>
 
-            <!-- Botão Seguro com Tag de Link Direto para o App -->
-            <a href="#" id="btnDispararWhats" class="btn-submit">
+            <button type="submit" class="btn-submit">
                 Enviar Pedido para o WhatsApp
-            </a>
+            </button>
         </form>
     </div>
 
     <script>
-        // SEU NÚMERO CONFIGURADO
-        var TELEFONE_WHATSAPP = "5541984097193"; 
-
         var dataSelecionada = "Hoje (Terça-feira)";
         var horarioSelecionado = "08:00";
         var formatoSelecionado = "📍 Presencial (No meu endereço)";
 
-        // SELEÇÃO DOS CARDS INTERATIVOS
+        // SELEÇÃO DOS CARDS
         var dateCards = document.querySelectorAll('#dateGrid .date-card');
         dateCards.forEach(function(card) {
             card.addEventListener('click', function() {
                 dateCards.forEach(function(c) { c.classList.remove('active'); });
                 card.classList.add('active');
                 dataSelecionada = card.getAttribute('data-date');
-                atualizarLink();
             });
         });
 
@@ -144,7 +144,6 @@
                 timeCards.forEach(function(c) { c.classList.remove('active'); });
                 card.classList.add('active');
                 horarioSelecionado = card.getAttribute('data-time');
-                atualizarLink();
             });
         });
 
@@ -154,18 +153,13 @@
                 typeCards.forEach(function(c) { c.classList.remove('active'); });
                 card.classList.add('active');
                 formatoSelecionado = card.getAttribute('data-type');
-                atualizarLink();
             });
         });
 
-        // Escutar digitação para atualizar as informações na hora
-        document.getElementById('name').addEventListener('input', atualizarLink);
-        document.getElementById('service').addEventListener('input', atualizarLink);
-
-        // FUNÇÃO QUE MONTA O LINK PERFEITO E SEGURO
-        function atualizarLink() {
-            var nomeCliente = document.getElementById('name').value || "...";
-            var serviceCliente = document.getElementById('service').value || "...";
+        // MONTA A MENSAGEM NATIVA ANTES DO ENVIO
+        document.getElementById('formAgendamento').addEventListener('submit', function() {
+            var nomeCliente = document.getElementById('name').value;
+            var serviceCliente = document.getElementById('service').value;
 
             var textoMensagem = "Olá! Gostaria de confirmar um agendamento:\n\n" +
                                 "👤 *Nome:* " + nomeCliente + "\n" +
@@ -175,14 +169,9 @@
                                 "💼 *Formato:* " + formatoSelecionado + "\n\n" +
                                 "Fico no aguardo do seu retorno!";
 
-            // O formato curto obriga o smartphone a pular o site institucional e abrir o aplicativo direto
-            var linkPronto = "https://wa.me" + TELEFONE_WHATSAPP + "?text=" + encodeURIComponent(textoMensagem);
-            
-            document.getElementById('btnDispararWhats').setAttribute('href', linkPronto);
-        }
-
-        // Inicia o link quando a página carrega pela primeira vez
-        atualizarLink();
+            // Alimenta o campo oculto que envia a mensagem de forma limpa e nativa
+            document.getElementById('textInput').value = textoMensagem;
+        });
     </script>
 </body>
 </html>
