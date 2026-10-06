@@ -152,7 +152,7 @@
             });
         });
 
-        // DISPARO INTELIGENTE COM LINKS DE SISTEMA OPERACIONAL (MOBILE DEEP LINK)
+        // DIRECONAMENTO UNIVERSAL E MATADOR (wa.me)
         document.getElementById('formAgendamento').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -171,11 +171,11 @@
             var linkFinal = "";
 
             if (esCelular) {
-                // PROTOCOLO INTERNO DO SMARTPHONE: Força a abertura do app nativo sem passar por sites
-                linkFinal = "whatsapp://send?phone=" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
+                // ROTA UNIVERSAL MOBILE: O próprio sistema operacional do smartphone reconhece e abre o app ativo
+                linkFinal = "https://wa.me" + TELEFONE_WHATSAPP + "?text=" + encodeURIComponent(textoMensagem);
             } else {
-                // Protocolo para Computadores (WhatsApp Web)
-                linkFinal = "https://web.whatsapp.com/send?phone=" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
+                // ROTA PARA COMPUTADORES (WhatsApp Web)
+                linkFinal = "https://whatsapp.com" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
             }
             
             window.location.href = linkFinal;
