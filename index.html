@@ -57,7 +57,13 @@
             <p>Escolha as opções abaixo para agendar pelo WhatsApp</p>
         </div>
 
-        <form id="formAgendamento">
+        <!-- Mudança chave: O formulário agora envia diretamente usando o método GET nativo -->
+        <form id="formAgendamento" method="GET" action="https://whatsapp.com">
+            
+            <!-- Configurações ocultas que a API do WhatsApp precisa -->
+            <input type="hidden" name="phone" value="5541984096589">
+            <input type="hidden" name="text" id="textInput" value="">
+
             <!-- 1. Datas Fixas -->
             <div class="section-title">1. Escolha o dia</div>
             <div class="date-grid" id="dateGrid">
@@ -118,14 +124,11 @@
     </div>
 
     <script>
-        // SEU NÚMERO FIXADO CORRETAMENTE E SEM ERROS DE CÓDIGO
-        var TELEFONE_WHATSAPP = "5541984096589"; 
-
         var dataSelecionada = "Hoje (Terça-feira)";
         var horarioSelecionado = "08:00";
         var formatoSelecionado = "📍 Presencial (No meu endereço)";
 
-        // SELEÇÃO DOS CARDS DE DATA
+        // SELEÇÃO DOS CARDS
         var dateCards = document.querySelectorAll('#dateGrid .date-card');
         dateCards.forEach(function(card) {
             card.addEventListener('click', function() {
@@ -135,7 +138,6 @@
             });
         });
 
-        // SELEÇÃO DOS CARDS DE HORÁRIO
         var timeCards = document.querySelectorAll('#timeGrid .time-card');
         timeCards.forEach(function(card) {
             card.addEventListener('click', function() {
@@ -145,7 +147,6 @@
             });
         });
 
-        // SELEÇÃO DO TIPO DE ATENDIMENTO
         var typeCards = document.querySelectorAll('#typeGrid .type-card');
         typeCards.forEach(function(card) {
             card.addEventListener('click', function() {
@@ -155,25 +156,21 @@
             });
         });
 
-        // DISPARO SEGURO E DIRETO PARA O WHATSAPP
-        document.getElementById('formAgendamento').addEventListener('submit', function(event) {
-            event.preventDefault();
-
+        // MONTA A MENSAGEM ANTES DE ENVIAR O FORMULÁRIO NATIVO
+        document.getElementById('formAgendamento').addEventListener('submit', function() {
             var nomeCliente = document.getElementById('name').value;
-            var servicoCliente = document.getElementById('service').value;
+            var serviceCliente = document.getElementById('service').value;
 
             var textoMensagem = "Olá! Gostaria de confirmar um agendamento:\n\n" +
                                 "👤 *Nome:* " + nomeCliente + "\n" +
-                                "🛠️ *Serviço:* " + servicoCliente + "\n" +
+                                "🛠️ *Serviço:* " + serviceCliente + "\n" +
                                 "📅 *Data:* " + dataSelecionada + "\n" +
                                 "⏰ *Horário:* " + horarioSelecionado + "\n" +
                                 "💼 *Formato:* " + formatoSelecionado + "\n\n" +
                                 "Fico no aguardo do seu retorno!";
 
-            var linkFinal = "https://whatsapp.com" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
-            
-            // Força o navegador a ir para o app do WhatsApp sem abrir nova aba
-            window.location.href = linkFinal;
+            // Insere o texto gerado dentro do input oculto que vai pro WhatsApp
+            document.getElementById('textInput').value = textoMensagem;
         });
     </script>
 </body>
