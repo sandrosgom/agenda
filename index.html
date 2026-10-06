@@ -57,13 +57,7 @@
             <p>Escolha as opções abaixo para agendar pelo WhatsApp</p>
         </div>
 
-        <!-- MUDANÇA BLINDADA: O formulário envia direto para o link da API oficial com a barra correta -->
-        <form id="formAgendamento" method="GET" action="https://whatsapp.com">
-            
-            <!-- Parâmetros que a API do WhatsApp exige de forma nativa -->
-            <input type="hidden" name="phone" value="5541984097193">
-            <input type="hidden" name="text" id="textInput" value="">
-
+        <form id="formAgendamento">
             <!-- 1. Datas Fixas -->
             <div class="section-title">1. Escolha o dia</div>
             <div class="date-grid" id="dateGrid">
@@ -124,6 +118,8 @@
     </div>
 
     <script>
+        var TELEFONE_WHATSAPP = "5541984097193"; 
+
         var dataSelecionada = "Hoje (Terça-feira)";
         var horarioSelecionado = "08:00";
         var formatoSelecionado = "📍 Presencial (No meu endereço)";
@@ -156,8 +152,10 @@
             });
         });
 
-        // MONTA A MENSAGEM NATIVA ANTES DO ENVIO
-        document.getElementById('formAgendamento').addEventListener('submit', function() {
+        // DISPARO INTELIGENTE COM LINKS DE SISTEMA OPERACIONAL (MOBILE DEEP LINK)
+        document.getElementById('formAgendamento').addEventListener('submit', function(event) {
+            event.preventDefault();
+
             var nomeCliente = document.getElementById('name').value;
             var serviceCliente = document.getElementById('service').value;
 
@@ -169,8 +167,18 @@
                                 "💼 *Formato:* " + formatoSelecionado + "\n\n" +
                                 "Fico no aguardo do seu retorno!";
 
-            // Alimenta o campo oculto que envia a mensagem de forma limpa e nativa
-            document.getElementById('textInput').value = textoMensagem;
+            var esCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            var linkFinal = "";
+
+            if (esCelular) {
+                // PROTOCOLO INTERNO DO SMARTPHONE: Força a abertura do app nativo sem passar por sites
+                linkFinal = "whatsapp://send?phone=" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
+            } else {
+                // Protocolo para Computadores (WhatsApp Web)
+                linkFinal = "https://web.whatsapp.com/send?phone=" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(textoMensagem);
+            }
+            
+            window.location.href = linkFinal;
         });
     </script>
 </body>
