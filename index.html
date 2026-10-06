@@ -182,7 +182,8 @@
                                   `💼 *Formato:* ${formatoSelecionado}\n\n` +
                                   `Fico no aguardo do seu retorno!`;
 
-            const linkWhatsApp = `https://wa.me{numeroLimpo}?text=${encodeURIComponent(textoMensagem)}`;
+            const linkWhatsApp = `https://wa.me{encodeURIComponent(textoMensagem)}`;
+
             
             window.location.href = linkWhatsApp;
         });
