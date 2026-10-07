@@ -21,24 +21,23 @@
         .avatar { width: 70px; height: 70px; background: #eaeaea; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
         .header h1 { font-size: 1.3rem; margin-bottom: 4px; }
         .header p { font-size: 0.9rem; color: var(--text-light); }
-        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; margin-top: 15px; }
         
         /* GRIDS DE SELEÇÃO */
-        .date-grid, .time-grid, .type-grid { display: grid; gap: 8px; margin-bottom: 25px; }
-        .date-grid { grid-template-columns: repeat(4, 1fr); }
+        .time-grid, .type-grid { display: grid; gap: 8px; margin-bottom: 25px; }
         .time-grid { grid-template-columns: repeat(3, 1fr); }
         .type-grid { grid-template-columns: repeat(2, 1fr); }
 
-        .date-card, .time-card, .type-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-        .date-card span { display: block; }
-        .date-card .weekday { font-size: 0.75rem; text-transform: uppercase; color: var(--text-light); }
-        .date-card .day { font-size: 1.1rem; font-weight: bold; }
+        .time-card, .type-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s; font-weight: 500; }
         
         /* ESTADOS ATIVOS */
-        .date-card.active, .time-card.active, .type-card.active { background-color: var(--primary); border-color: var(--primary); color: white; }
-        .date-card.active .weekday { color: rgba(255,255,255,0.8); }
+        .time-card.active, .type-card.active { background-color: var(--primary); border-color: var(--primary); color: white; }
         
-        /* FORMULÁRIO */
+        /* FORMULÁRIO E CALENDÁRIO */
+        .calendar-container { margin-bottom: 25px; width: 100%; }
+        .calendar-input { width: 100%; padding: 12px 15px; font-size: 16px; border: 1px solid var(--border); border-radius: 8px; background-color: #fff; color: #333; outline: none; transition: border-color 0.2s; }
+        .calendar-input:focus { border-color: var(--primary-dark); }
+
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-light); }
         .input-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; outline: none; }
@@ -57,54 +56,14 @@
             <p>Escolha as opções abaixo para agendar pelo WhatsApp</p>
         </div>
 
+        <!-- Início correto do Formulário envolvendo TODOS os campos -->
         <form id="formAgendamento">
-    <!-- 1. Calendário Dinâmico -->
-    <div class="section-title">1. Escolha o dia</div>
-    
-    <div class="calendar-container">
-        <!-- O input nativo abre o calendário completo do sistema/navegador -->
-        <input type="date" id="dataAgendamento" class="calendar-input" required>
-    </div>
-</form>
-
-<style>
-/* Estilização para o botão do calendário ficar elegante */
-.calendar-container {
-    margin: 15px 0;
-    width: 100%;
-    max-width: 300px;
-}
-
-.calendar-input {
-    width: 100%;
-    padding: 12px 15px;
-    font-size: 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #fff;
-    color: #333;
-    font-family: inherit;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-/* Destaca a borda quando o usuário clica */
-.calendar-input:focus {
-    border-color: #007bff; /* Mude para a cor do seu tema */
-}
-</style>
-
-<script>
-// Script opcional: Bloqueia datas passadas para que o cliente só agende de hoje em diante
-document.addEventListener("DOMContentLoaded", function() {
-    const dateInput = document.getElementById("dataAgendamento");
-    const hoje = new Date().toISOString().split("T")[0];
-    dateInput.min = hoje; // Define a data mínima como hoje
-    dateInput.value = hoje; // Deixa o dia de hoje selecionado por padrão
-});
-</script>
-
+            
+            <!-- 1. Calendário Dinâmico -->
+            <div class="section-title">1. Escolha o dia</div>
+            <div class="calendar-container">
+                <input type="date" id="dataAgendamento" class="calendar-input" required>
+            </div>
 
             <!-- 2. Horários Comerciais -->
             <div class="section-title">2. Escolha o horário</div>
@@ -147,20 +106,18 @@ document.addEventListener("DOMContentLoaded", function() {
     <script>
         var TELEFONE_WHATSAPP = "5541984097193"; 
 
-        var dataSelecionada = "Hoje (Terça-feira)";
         var horarioSelecionado = "08:00";
         var formatoSelecionado = "📍 Presencial (No meu endereço)";
 
-        // SELEÇÃO DOS CARDS
-        var dateCards = document.querySelectorAll('#dateGrid .date-card');
-        dateCards.forEach(function(card) {
-            card.addEventListener('click', function() {
-                dateCards.forEach(function(c) { c.classList.remove('active'); });
-                card.classList.add('active');
-                dataSelecionada = card.getAttribute('data-date');
-            });
+        // Configuração inicial do calendário dinâmico
+        document.addEventListener("DOMContentLoaded", function() {
+            const dateInput = document.getElementById("dataAgendamento");
+            const hoje = new Date().toISOString().split("T")[0];
+            dateInput.min = hoje; // Evita datas passadas
+            dateInput.value = hoje; // Define o dia de hoje por padrão
         });
 
+        // SELEÇÃO DOS HORÁRIOS
         var timeCards = document.querySelectorAll('#timeGrid .time-card');
         timeCards.forEach(function(card) {
             card.addEventListener('click', function() {
@@ -170,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
+        // SELEÇÃO DO FORMATO DE ATENDIMENTO
         var typeCards = document.querySelectorAll('#typeGrid .type-card');
         typeCards.forEach(function(card) {
             card.addEventListener('click', function() {
@@ -179,32 +137,34 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
-        // ENVIAR PEDIDO COM PROTOCOLO DE CONEXÃO ATUALIZADO
+        // ENVIO DO FORMULÁRIO CORRIGIDO PARA CAPTURAR A DATA DO INPUT
         document.getElementById('formAgendamento').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Impede a página de recarregar
 
-            var nomeCliente = document.getElementById('name').value;
-            var serviceCliente = document.getElementById('service').value;
-
-            var textoMensagem = "Olá! Gostaria de confirmar um agendamento:\n\n" +
-                                "👤 *Nome:* " + nomeCliente + "\n" +
-                                "🛠️ *Serviço:* " + serviceCliente + "\n" +
-                                "📅 *Data:* " + dataSelecionada + "\n" +
-                                "⏰ *Horário:* " + horarioSelecionado + "\n" +
-                                "💼 *Formato:* " + formatoSelecionado;
-
-            var textoCodificado = encodeURIComponent(textoMensagem);
-
-            // Cria o link que tenta forçar a abertura direta no aplicativo do celular
-            var linkAppNativo = "whatsapp://send?phone=" + TELEFONE_WHATSAPP + "&text=" + textoCodificado;
-            var linkWebAlternativo = "https://wa.me" + TELEFONE_WHATSAPP + "?text=" + textoCodificado;
-
-            // Executa a tentativa nativa. Se falhar no WebView do aplicativo, usa a URL alternativa.
-            try {
-                window.location.href = linkAppNativo;
-            } catch (e) {
-                window.open(linkWebAlternativo, '_blank');
+            var nomeClient = document.getElementById('name').value;
+            var servicoClient = document.getElementById('service').value;
+            
+            // Captura o valor do calendário e formata visualmente para DD/MM/AAAA antes do envio
+            var dataCrua = document.getElementById('dataAgendamento').value;
+            var dataFormatada = dataCrua;
+            if (dataCrua) {
+                var partes = dataCrua.split('-');
+                dataFormatada = partes[2] + '/' + partes[1] + '/' + partes[0];
             }
+
+            // Monta o texto da mensagem formatado
+            var mensagemTxt = "*Novo Agendamento Solicitado*\n\n" +
+                              "*Nome:* " + nomeClient + "\n" +
+                              "*Serviço:* " + servicoClient + "\n" +
+                              "*Data:* " + dataFormatada + "\n" +
+                              "*Horário:* " + horarioSelecionado + "\n" +
+                              "*Formato:* " + formatoSelecionado;
+
+            // Cria o link do WhatsApp
+            var linkWhats = "https://whatsapp.com" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(mensagemTxt);
+
+            // Abre a conversa com os dados preenchidos
+            window.open(linkWhats, '_blank');
         });
     </script>
 </body>
