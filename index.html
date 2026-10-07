@@ -58,26 +58,53 @@
         </div>
 
         <form id="formAgendamento">
-            <!-- 1. Datas Fixas -->
-            <div class="section-title">1. Escolha o dia</div>
-            <div class="date-grid" id="dateGrid">
-                <div class="date-card active" data-date="Hoje (Terça-feira)">
-                    <span class="weekday">Hoje</span>
-                    <span class="day">06</span>
-                </div>
-                <div class="date-card" data-date="Quarta-feira (07/10)">
-                    <span class="weekday">Qua</span>
-                    <span class="day">07</span>
-                </div>
-                <div class="date-card" data-date="Quinta-feira (08/10)">
-                    <span class="weekday">Qui</span>
-                    <span class="day">08</span>
-                </div>
-                <div class="date-card" data-date="Sexta-feira (09/10)">
-                    <span class="weekday">Sex</span>
-                    <span class="day">09</span>
-                </div>
-            </div>
+    <!-- 1. Calendário Dinâmico -->
+    <div class="section-title">1. Escolha o dia</div>
+    
+    <div class="calendar-container">
+        <!-- O input nativo abre o calendário completo do sistema/navegador -->
+        <input type="date" id="dataAgendamento" class="calendar-input" required>
+    </div>
+</form>
+
+<style>
+/* Estilização para o botão do calendário ficar elegante */
+.calendar-container {
+    margin: 15px 0;
+    width: 100%;
+    max-width: 300px;
+}
+
+.calendar-input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* Destaca a borda quando o usuário clica */
+.calendar-input:focus {
+    border-color: #007bff; /* Mude para a cor do seu tema */
+}
+</style>
+
+<script>
+// Script opcional: Bloqueia datas passadas para que o cliente só agende de hoje em diante
+document.addEventListener("DOMContentLoaded", function() {
+    const dateInput = document.getElementById("dataAgendamento");
+    const hoje = new Date().toISOString().split("T")[0];
+    dateInput.min = hoje; // Define a data mínima como hoje
+    dateInput.value = hoje; // Deixa o dia de hoje selecionado por padrão
+});
+</script>
+
 
             <!-- 2. Horários Comerciais -->
             <div class="section-title">2. Escolha o horário</div>
