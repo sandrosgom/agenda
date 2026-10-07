@@ -56,7 +56,6 @@
             <p>Escolha as opções abaixo para agendar pelo WhatsApp</p>
         </div>
 
-        <!-- Início correto do Formulário envolvendo TODOS os campos -->
         <form id="formAgendamento">
             
             <!-- 1. Calendário Dinâmico -->
@@ -90,11 +89,11 @@
             <div class="section-title">4. Seus Dados</div>
             <div class="input-group">
                 <label for="name">Seu Nome</label>
-                <input type="text" id="name" placeholder="Ex: Carlos Souza" required>
+                <input type="text" id="idNome" placeholder="Ex: Carlos Souza" required>
             </div>
             <div class="input-group">
                 <label for="service">Serviço Pretendido</label>
-                <input type="text" id="service" placeholder="Ex: Conserto de Televisão" required>
+                <input type="text" id="idServico" placeholder="Ex: Conserto de Televisão" required>
             </div>
 
             <button type="submit" class="btn-submit">
@@ -111,10 +110,10 @@
 
         // Configuração inicial do calendário dinâmico
         document.addEventListener("DOMContentLoaded", function() {
-            const dateInput = document.getElementById("dataAgendamento");
-            const hoje = new Date().toISOString().split("T")[0];
-            dateInput.min = hoje; // Evita datas passadas
-            dateInput.value = hoje; // Define o dia de hoje por padrão
+            var dateInput = document.getElementById("dataAgendamento");
+            var hoje = new Date().toISOString().split("T")[0];
+            dateInput.min = hoje; 
+            dateInput.value = hoje; 
         });
 
         // SELEÇÃO DOS HORÁRIOS
@@ -137,14 +136,14 @@
             });
         });
 
-        // ENVIO DO FORMULÁRIO CORRIGIDO PARA CAPTURAR A DATA DO INPUT
+        // ENVIO DO FORMULÁRIO CORRIGIDO E TESTADO
         document.getElementById('formAgendamento').addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede a página de recarregar
+            event.preventDefault(); 
 
-            var nomeClient = document.getElementById('name').value;
-            var servicoClient = document.getElementById('service').value;
+            var nomeClient = document.getElementById('idNome').value;
+            var servicoClient = document.getElementById('idServico').value;
             
-            // Captura o valor do calendário e formata visualmente para DD/MM/AAAA antes do envio
+            // Corrige a formatação da data para o formato BR
             var dataCrua = document.getElementById('dataAgendamento').value;
             var dataFormatada = dataCrua;
             if (dataCrua) {
@@ -152,7 +151,7 @@
                 dataFormatada = partes[2] + '/' + partes[1] + '/' + partes[0];
             }
 
-            // Monta o texto da mensagem formatado
+            // Monta o texto estruturado para envio
             var mensagemTxt = "*Novo Agendamento Solicitado*\n\n" +
                               "*Nome:* " + nomeClient + "\n" +
                               "*Serviço:* " + servicoClient + "\n" +
@@ -160,10 +159,8 @@
                               "*Horário:* " + horarioSelecionado + "\n" +
                               "*Formato:* " + formatoSelecionado;
 
-            // Cria o link do WhatsApp
+            // Cria e abre a URL do WhatsApp
             var linkWhats = "https://whatsapp.com" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(mensagemTxt);
-
-            // Abre a conversa com os dados preenchidos
             window.open(linkWhats, '_blank');
         });
     </script>
