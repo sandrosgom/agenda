@@ -88,11 +88,11 @@
             <!-- 4. Dados Cadastrais -->
             <div class="section-title">4. Seus Dados</div>
             <div class="input-group">
-                <label for="name">Seu Nome</label>
+                <label for="idNome">Seu Nome</label>
                 <input type="text" id="idNome" placeholder="Ex: Carlos Souza" required>
             </div>
             <div class="input-group">
-                <label for="service">Serviço Pretendido</label>
+                <label for="idServico">Serviço Pretendido</label>
                 <input type="text" id="idServico" placeholder="Ex: Conserto de Televisão" required>
             </div>
 
@@ -108,7 +108,7 @@
         var horarioSelecionado = "08:00";
         var formatoSelecionado = "📍 Presencial (No meu endereço)";
 
-        // Configuração inicial do calendário dinâmico
+        // Configuração inicial automática do calendário nativo
         document.addEventListener("DOMContentLoaded", function() {
             var dateInput = document.getElementById("dataAgendamento");
             var hoje = new Date().toISOString().split("T")[0];
@@ -116,7 +116,7 @@
             dateInput.value = hoje; 
         });
 
-        // SELEÇÃO DOS HORÁRIOS
+        // Alternar estados dos cards de Horário
         var timeCards = document.querySelectorAll('#timeGrid .time-card');
         timeCards.forEach(function(card) {
             card.addEventListener('click', function() {
@@ -126,7 +126,7 @@
             });
         });
 
-        // SELEÇÃO DO FORMATO DE ATENDIMENTO
+        // Alternar estados dos cards de Formato de Atendimento
         var typeCards = document.querySelectorAll('#typeGrid .type-card');
         typeCards.forEach(function(card) {
             card.addEventListener('click', function() {
@@ -136,22 +136,22 @@
             });
         });
 
-        // ENVIO DO FORMULÁRIO CORRIGIDO E TESTADO
+        // CAPTURA DO FORMULÁRIO COMPLETO E ENVIO DIRETO SEM TRAVAMENTOS
         document.getElementById('formAgendamento').addEventListener('submit', function(event) {
             event.preventDefault(); 
 
             var nomeClient = document.getElementById('idNome').value;
             var servicoClient = document.getElementById('idServico').value;
+            var dataCrua = document.getElementById('dataAgendamento').value; // Retorna: AAAA-MM-DD
             
-            // Corrige a formatação da data para o formato BR
-            var dataCrua = document.getElementById('dataAgendamento').value;
             var dataFormatada = dataCrua;
-            if (dataCrua) {
+            if (dataCrua && dataCrua.includes('-')) {
                 var partes = dataCrua.split('-');
+                // Organiza corretamente para o formato DD/MM/AAAA
                 dataFormatada = partes[2] + '/' + partes[1] + '/' + partes[0];
             }
 
-            // Monta o texto estruturado para envio
+            // Monta o layout limpo da mensagem para o seu celular
             var mensagemTxt = "*Novo Agendamento Solicitado*\n\n" +
                               "*Nome:* " + nomeClient + "\n" +
                               "*Serviço:* " + servicoClient + "\n" +
@@ -159,7 +159,7 @@
                               "*Horário:* " + horarioSelecionado + "\n" +
                               "*Formato:* " + formatoSelecionado;
 
-            // Cria e abre a URL do WhatsApp
+            // Gera e executa o disparo para o link oficial do WhatsApp
             var linkWhats = "https://whatsapp.com" + TELEFONE_WHATSAPP + "&text=" + encodeURIComponent(mensagemTxt);
             window.open(linkWhats, '_blank');
         });
